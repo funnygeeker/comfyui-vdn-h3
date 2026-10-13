@@ -21,6 +21,26 @@ This package is a **port, not a fork**: it reproduces the official hybrid-attent
 math on ComfyUI's native MiniMax-H3 model as runtime model patches. No ComfyUI core
 files are modified.
 
+> **About this mirror.** This repository is a mirror of
+> [Saganaki22/ComfyUI-VDN-H3](https://github.com/Saganaki22/ComfyUI-VDN-H3). Since
+> the upstream repository is currently inaccessible, this copy is a verbatim
+> snapshot of the original **v1.5.2** release.
+>
+> **Note on the VDN checkpoint.** The release's recommended checkpoint is
+> [OpenVDN/vdn-minimax-h3](https://huggingface.co/OpenVDN/vdn-minimax-h3). As an
+> *alternative*, the pre-quantized INT8 ConvRot model
+> [drbaph/vdn-minimax-h3-int8-convrot-comfyui](https://huggingface.co/drbaph/vdn-minimax-h3-int8-convrot-comfyui)
+> is a drop-in replacement with identical output and markedly lower peak VRAM.
+> In practice I consider it the better pick over the stock checkpoint:
+>
+> ```
+> hf download drbaph/vdn-minimax-h3-int8-convrot-comfyui \
+>   --local-dir <ComfyUI>/models/vdn/vdn-minimax-h3-int8-convrot-comfyui
+> ```
+>
+> An alternative implementation is also available at
+> [xmarre/ComfyUI-VDN-H3-Plus](https://github.com/xmarre/ComfyUI-VDN-H3-Plus).
+
 **Why this repo exists (and what it isn't).** The official VDN-H3 release targets a datacenter stack: 8× B200 GPUs with Ulysses sequence parallelism, and FlashAttention-4 kernels that only support Hopper and datacenter Blackwell — consumer Blackwell (sm_120) isn't supported, and there are no Windows builds. Upstream also uses FP8 linears and custom fused Triton kernels; this port substitutes those with portable PyTorch equivalents that run everywhere ComfyUI runs.
 
 What you get: the same released checkpoints and the same architecture — windowed softmax + Video Delta Attention branch, unit-tested against the official implementation — with zero new dependencies. The 8-step distilled model, near-lossless quality versus dense H3, and an attention cost that grows linearly with clip length instead of quadratically — the longer the video, the more this matters.
@@ -116,11 +136,13 @@ the upstream mathematical comparison are in
 
 ## Install
 
-1. Clone into `ComfyUI/custom_nodes/` and restart ComfyUI:
+1. Clone into `ComfyUI/custom_nodes/` and restart ComfyUI. The upstream
+   repository is currently inaccessible, so use this mirror instead of
+   ~~`git clone https://github.com/Saganaki22/ComfyUI-VDN-H3`~~:
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/Saganaki22/ComfyUI-VDN-H3
+git clone https://github.com/funnygeeker/ComfyUI-VDN-H3
 ```
 
 2. Download the VDN checkpoint stage you want into `ComfyUI/models/vdn/`:

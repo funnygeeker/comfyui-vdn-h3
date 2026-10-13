@@ -15,6 +15,25 @@ Attention** 线性分支,把平方级的长距离注意力替换为常数成本�
 本包是**移植而非分叉**:在 ComfyUI 原生 MiniMax-H3 模型上以运行时模型补丁的
 方式复现官方混合注意力数学,不修改任何 ComfyUI 核心文件。
 
+> **关于本镜像仓库。** 本仓库是
+> [Saganaki22/ComfyUI-VDN-H3](https://github.com/Saganaki22/ComfyUI-VDN-H3) 的镜像。
+> 由于原仓库目前无法访问,此处为 **v1.5.2** 的原始副本。
+>
+> **关于 VDN 检查点。** 发布版推荐的是
+> [OpenVDN/vdn-minimax-h3](https://huggingface.co/OpenVDN/vdn-minimax-h3) 检查点。
+> 作为*替代*方案,预量化的 INT8 ConvRot 模型
+> [drbaph/vdn-minimax-h3-int8-convrot-comfyui](https://huggingface.co/drbaph/vdn-minimax-h3-int8-convrot-comfyui)
+> 可直接替换,输出一致且加载峰值显存显著更低。就我的实际体验而言,它比自带的
+> 默认检查点更优:
+>
+> ```
+> hf download drbaph/vdn-minimax-h3-int8-convrot-comfyui \
+>   --local-dir <ComfyUI>/models/vdn/vdn-minimax-h3-int8-convrot-comfyui
+> ```
+>
+> 你也可以使用替代实现
+> [xmarre/ComfyUI-VDN-H3-Plus](https://github.com/xmarre/ComfyUI-VDN-H3-Plus)。
+
 **这个仓库存在的意义(以及它不是什么)。** 官方 VDN-H3 发布版面向数据中心技术栈:8× B200 GPU 的 Ulysses 序列并行,以及仅支持 Hopper 和数据中心级 Blackwell 的 FlashAttention-4 内核 —— 消费级 Blackwell(sm_120)不受支持,也没有 Windows 构建。上游还使用了 FP8 线性层和定制融合 Triton 内核;本移植用可在任何 ComfyUI 环境运行的纯 PyTorch 等价实现替代了这些。
 
 你能得到:相同的发布检查点与相同的架构 —— 窗口 softmax + Video Delta Attention 线性分支,并对官方实现做了单元测试验证 —— 零新增依赖。8 步蒸馏模型、相对稠密 H3 近乎无损的质量,以及随片段长度线性(而非平方)增长的注意力成本 —— 视频越长,收益越大。
@@ -79,11 +98,12 @@ CUDA 回归测试共 46 项,全部通过且无跳过。完整测量与上游数�
 
 ## 安装
 
-1. 克隆到 `ComfyUI/custom_nodes/` 并重启 ComfyUI:
+1. 克隆到 `ComfyUI/custom_nodes/` 并重启 ComfyUI。由于原仓库目前无法访问,请
+   改用本镜像 ~~`git clone https://github.com/Saganaki22/ComfyUI-VDN-H3`~~:
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/Saganaki22/ComfyUI-VDN-H3
+git clone https://github.com/funnygeeker/ComfyUI-VDN-H3
 ```
 
 2. 将需要的 VDN 检查点下载到 `ComfyUI/models/vdn/`:
